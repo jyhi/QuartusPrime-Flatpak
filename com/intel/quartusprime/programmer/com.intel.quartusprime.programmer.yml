@@ -1,0 +1,103 @@
+# SPDX-FileCopyrightText: 2024 Junde Yhi <junde@yhi.moe>
+# SPDX-License-Identifier: CC0-1.0
+
+id: com.intel.quartusprime.programmer
+collection-id: com.intel.quartusprime
+runtime: org.freedesktop.Platform
+runtime-version: '24.08'
+sdk: org.freedesktop.Sdk
+finish-args:
+  - --socket=x11
+  - --share=ipc
+  - --filesystem=host:ro
+  - --device=all
+command: quartus_pgmw.sh
+modules:
+  # Supply libcrypt.so.1, which is still required by the software.
+  - name: libxcrypt-compat
+    buildsystem: autotools
+    config-opts:
+      - --prefix=/app
+      - --enable-hashes=strong,glibc
+      - --enable-obsolete-api=glibc
+      - --disable-static
+      - --disable-failure-tokens
+    sources:
+      - type: archive
+        url: https://github.com/besser82/libxcrypt/releases/download/v4.4.36/libxcrypt-4.4.36.tar.xz
+        sha256: e5e1f4caee0a01de2aee26e3138807d6d3ca2b8e67287966d1fefd65e1fd8943
+
+  # Adjust loader configuration to include the vendored libxcrypt.
+  - name: ld-so-conf
+    buildsystem: simple
+    build-commands:
+      - mkdir -p /app/etc
+      - cp ld.so.conf /app/etc/ld.so.conf
+    sources:
+      - type: inline
+        dest-filename: ld.so.conf
+        contents: |
+          /app/lib
+
+  # Run the installer for Quartus Prime Programmer.
+  - name: installer
+    buildsystem: simple
+    build-commands:
+      - chmod u+x QuartusProgrammerSetup-23.1std.1.993-linux.run
+      - ./QuartusProgrammerSetup-23.1std.1.993-linux.run --mode unattended --installdir /app/opt/intelFPGA/23.1std --product_copy_name Flatpak --accept_eula 1
+      # Fix permissions of the extracted files and folders to allow the build process to carry on...
+      - chmod -R u+w,g-s /app/opt/intelFPGA
+    sources:
+      - type: file
+        path: QuartusProgrammerSetup-23.1std.1.993-linux.run
+        # SHA-1 is taken from the Intel website, but SHA-256 is used in favor of the security.
+        # sha1: e488e1084349db280bd32bd9aa54711067f13fa3
+        sha256: 1ec1e39a567729036661146385bdb3477e27b68189b37b5c290d80a5a93ffda2
+
+  # Do various post-installation work. Separated from the last step because we want it to be kept cached.
+  - name: post-install
+    buildsystem: simple
+    build-commands:
+      # Remove unnecessary files.
+      - rm -fr /app/opt/intelFPGA/23.1std/logs
+      - rm -fr /app/opt/intelFPGA/23.1std/uninstall
+      # Add AppStream data, application icon, and desktop entry.
+      - mkdir -p /app/share/metainfo
+      - cp com.intel.quartusprime.programmer.metainfo.xml /app/share/metainfo
+      - mkdir -p /app/share/icons/hicolor/64x64/apps
+      - cp /app/opt/intelFPGA/23.1std/qprogrammer/adm/quartusii.png /app/share/icons/hicolor/64x64/apps/com.intel.quartusprime.programmer.png
+      - mkdir -p /app/share/applications
+      - cp com.intel.quartusprime.programmer.desktop /app/share/applications
+    sources:
+      - type: file
+        path: com.intel.quartusprime.programmer.metainfo.xml
+      - type: file
+        path: com.intel.quartusprime.programmer.desktop
+
+  # Install two scripts as entry points:
+  #
+  # - enable.sh sets up the environment. The name follows the convention for similar scripts in SDK extensions.
+  # - quartus_pgmw.sh launches Quartus Prime Programmer. It's the declared Flatpak entry point.
+  #
+  # source enable.sh to run programs other than Quartus Prime Programmer (e.g. command-line utilities or bash).
+  # quartus_pgmw.sh sources enable.sh before launching Quartus Prime. See also:
+  # <https://www.intel.com/content/www/us/en/docs/programmable/683472/24-3/setting-environment-variables-67330.html>.
+  - name: entrypoint-sh
+    buildsystem: simple
+    build-commands:
+      - mkdir -p /app/bin
+      - cp enable.sh /app/enable.sh
+      - cp quartus_pgmw.sh /app/bin/quartus_pgmw.sh
+      - chmod 0755 /app/enable.sh /app/bin/quartus_pgmw.sh
+    sources:
+      - type: script
+        dest-filename: enable.sh
+        commands:
+          - QPROGRAMMER_ROOTDIR='/app/opt/intelFPGA/23.1std/qprogrammer'
+          - export QSYS_ROOTDIR="${QPROGRAMMER_ROOTDIR}/sopc_builder/bin"
+          - export PATH="${PATH}:${QPROGRAMMER_ROOTDIR}/bin:${QSYS_ROOTDIR}"
+      - type: script
+        dest-filename: quartus_pgmw.sh
+        commands:
+          - . /app/enable.sh
+          - quartus_pgmw "$@"

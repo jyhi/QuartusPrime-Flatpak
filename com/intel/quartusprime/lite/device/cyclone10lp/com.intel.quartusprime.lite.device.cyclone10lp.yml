@@ -1,0 +1,30 @@
+# SPDX-FileCopyrightText: 2024 Junde Yhi <junde@yhi.moe>
+# SPDX-License-Identifier: CC0-1.0
+
+id: com.intel.quartusprime.lite.device.cyclone10lp
+collection-id: com.intel.quartusprime
+runtime: com.intel.quartusprime.lite
+sdk: org.freedesktop.Sdk//24.08
+build-extension: true
+modules:
+  - name: installer
+    buildsystem: simple
+    build-commands:
+      - cp -R cyclone10lp "${FLATPAK_DEST}"
+    sources:
+      - type: archive
+        archive-type: zip
+        strip-components: 3 # quartus/common/devinfo
+        path: cyclone10lp-23.1std.1.993.qdz
+        # SHA-1 is taken from the Intel website, but SHA-256 is used in favor of the security.
+        # sha1: 7e6e789fee10fe26346c66dab65a5c4a66811de0
+        sha256: 8bc5492aa9487d098ad865a19b45b416e8c772ea78463797ba084bd951b98246
+
+  - name: metadata
+    buildsystem: simple
+    build-commands:
+      - mkdir -p "${FLATPAK_DEST}/share/metainfo"
+      - cp com.intel.quartusprime.lite.device.cyclone10lp.metainfo.xml "${FLATPAK_DEST}/share/metainfo"
+    sources:
+      - type: file
+        path: com.intel.quartusprime.lite.device.cyclone10lp.metainfo.xml

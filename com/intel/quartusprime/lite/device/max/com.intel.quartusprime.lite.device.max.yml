@@ -1,0 +1,30 @@
+# SPDX-FileCopyrightText: 2024 Junde Yhi <junde@yhi.moe>
+# SPDX-License-Identifier: CC0-1.0
+
+id: com.intel.quartusprime.lite.device.max
+collection-id: com.intel.quartusprime
+runtime: com.intel.quartusprime.lite
+sdk: org.freedesktop.Sdk//24.08
+build-extension: true
+modules:
+  - name: installer
+    buildsystem: simple
+    build-commands:
+      - cp -R maxii maxv "${FLATPAK_DEST}"
+    sources:
+      - type: archive
+        archive-type: zip
+        strip-components: 3 # quartus/common/devinfo
+        path: max-23.1std.1.993.qdz
+        # SHA-1 is taken from the Intel website, but SHA-256 is used in favor of the security.
+        # sha1: 085005853bb61e0d4181a3aea8a31e79ab35c2d3
+        sha256: aa1f76d26beed07f9f52e489047edf0cfcb0ce597ab0676612d7f1df60290920
+
+  - name: metadata
+    buildsystem: simple
+    build-commands:
+      - mkdir -p "${FLATPAK_DEST}/share/metainfo"
+      - cp com.intel.quartusprime.lite.device.max.metainfo.xml "${FLATPAK_DEST}/share/metainfo"
+    sources:
+      - type: file
+        path: com.intel.quartusprime.lite.device.max.metainfo.xml

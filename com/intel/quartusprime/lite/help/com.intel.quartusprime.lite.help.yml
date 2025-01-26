@@ -1,0 +1,30 @@
+# SPDX-FileCopyrightText: 2024 Junde Yhi <junde@yhi.moe>
+# SPDX-License-Identifier: CC0-1.0
+
+id: com.intel.quartusprime.lite.help
+collection-id: com.intel.quartusprime
+runtime: com.intel.quartusprime.lite
+sdk: org.freedesktop.Sdk//24.08
+build-extension: true
+modules:
+  - name: installer
+    buildsystem: simple
+    build-commands:
+      - chmod u+x QuartusHelpSetup-23.1std.1.993-linux.run
+      - ./QuartusHelpSetup-23.1std.1.993-linux.run --mode unattended --installdir ./intelFPGA_lite/23.1std --product_copy_name Flatpak --accept_eula 1
+      - cp -R ./intelFPGA_lite/23.1std/quartus/common/help/* "${FLATPAK_DEST}"
+    sources:
+      - type: file
+        path: QuartusHelpSetup-23.1std.1.993-linux.run
+        # SHA-1 is taken from the Intel website, but SHA-256 is used in favor of the security.
+        # sha1: d35838c4126ac42fe7e94e7f16003ea652acd478
+        sha256: 7443b02147b676bfd2dfefee2163a0ca3826910a20797426ebd7c3598db42497
+
+  - name: metadata
+    buildsystem: simple
+    build-commands:
+      - mkdir -p "${FLATPAK_DEST}/share/metainfo"
+      - cp com.intel.quartusprime.lite.help.metainfo.xml "${FLATPAK_DEST}/share/metainfo"
+    sources:
+      - type: file
+        path: com.intel.quartusprime.lite.help.metainfo.xml

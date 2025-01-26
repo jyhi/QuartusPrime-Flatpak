@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2024 Junde Yhi <junde@yhi.moe> -->
+<component type="desktop-application">
+  <id>com.intel.quartusprime.lite</id>
+  <name>Quartus Prime Lite</name>
+  <summary>Intel FPGA design software</summary>
+  <description>
+    <p>
+      The intuitive high-performance design environment. From design entry and synthesis to optimization, verification,
+      and simulation, Intel Quartus Prime Design Software unlocks increased capabilities on devices with multi-million
+      logic elements, providing designers with the ideal platform to meet next-generation design opportunities.
+    </p>
+    <p>
+      Intel Quartus Prime Software enables a fast path to turning Intel FPGA, SoC, and CPLD designs into reality. It
+      provides tools and features needed to help with every step from design entry and synthesis to optimization,
+      verification, and simulation.
+    </p>
+  </description>
+  <categories>
+    <category>Development</category>
+    <category>Electronics</category>
+  </categories>
+  <developer id="com.intel">
+    <name>Intel Corporation</name>
+  </developer>
+  <content_rating type="oars-1.1" />
+  <url type="homepage">https://www.intel.com/content/www/us/en/products/details/fpga/development-tools/quartus-prime.html</url>
+  <url type="help">https://www.intel.com/content/www/us/en/support/programmable/support-resources/design-software/user-guides.html</url>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>LicenseRef-QuartusPrime</project_license>
+  <launchable type="desktop-id">com.intel.quartusprime.lite.desktop</launchable>
+  <provides>
+    <id>com.intel.quartusprime.programmer</id>
+  </provides>
+  <recommends>
+    <id version="23.1.1" compare="eq">com.intel.quartusprime.lite.help</id>
+    <id version="23.1.1" compare="eq">com.intel.quartusprime.lite.questa.starter</id>
+  </recommends>
+  <supports>
+    <id version="23.1.1" compare="eq">com.intel.quartusprime.lite.device.arrialite</id>
+    <id version="23.1.1" compare="eq">com.intel.quartusprime.lite.device.cyclone</id>
+    <id version="23.1.1" compare="eq">com.intel.quartusprime.lite.device.cyclone10lp</id>
+    <id version="23.1.1" compare="eq">com.intel.quartusprime.lite.device.cyclonev</id>
+    <id version="23.1.1" compare="eq">com.intel.quartusprime.lite.device.max</id>
+    <id version="23.1.1" compare="eq">com.intel.quartusprime.lite.device.max10</id>
+  </supports>
+  <releases>
+    <release version="23.1.1" date="2024-06-14">
+      <url>https://www.intel.com/content/www/us/en/software-kit/825277/intel-quartus-prime-lite-edition-design-software-version-23-1-1-for-linux.html</url>
+    </release>
+    <release version="23.1" date="2023-12-11">
+      <url>https://www.intel.com/content/www/us/en/software-kit/795187/intel-quartus-prime-lite-edition-design-software-version-23-1-for-linux.html</url>
+    </release>
+  </releases>
+</component>
+
+<!-- SPDX-License-Identifier: CC0-1.0 -->

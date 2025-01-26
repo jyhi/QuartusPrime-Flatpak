@@ -1,0 +1,30 @@
+# SPDX-FileCopyrightText: 2024 Junde Yhi <junde@yhi.moe>
+# SPDX-License-Identifier: CC0-1.0
+
+id: com.intel.quartusprime.lite.device.arrialite
+collection-id: com.intel.quartusprime
+runtime: com.intel.quartusprime.lite
+sdk: org.freedesktop.Sdk//24.08
+build-extension: true
+modules:
+  - name: installer
+    buildsystem: simple
+    build-commands:
+      - cp -R arriaii "${FLATPAK_DEST}"
+    sources:
+      - type: archive
+        archive-type: zip
+        strip-components: 3 # quartus/common/devinfo
+        path: arria_lite-23.1std.1.993.qdz
+        # SHA-1 is taken from the Intel website, but SHA-256 is used in favor of the security.
+        # sha1: 89bdc25bba825e9642b2e24c83796297d2a2b7c5
+        sha256: 3cda1cd7963987ed9bc61605231920d6a540b17217dc831f11049d3cb54d529e
+
+  - name: metadata
+    buildsystem: simple
+    build-commands:
+      - mkdir -p "${FLATPAK_DEST}/share/metainfo"
+      - cp com.intel.quartusprime.lite.device.arrialite.metainfo.xml "${FLATPAK_DEST}/share/metainfo"
+    sources:
+      - type: file
+        path: com.intel.quartusprime.lite.device.arrialite.metainfo.xml

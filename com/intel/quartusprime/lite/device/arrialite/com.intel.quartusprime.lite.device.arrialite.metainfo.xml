@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2024 Junde Yhi <junde@yhi.moe> -->
+<component type="addon">
+  <id>com.intel.quartusprime.lite.device.arrialite</id>
+  <extends>com.intel.quartusprime.lite</extends>
+  <name>Arria II</name>
+  <summary>Device support for Quartus Prime Lite</summary>
+  <categories>
+    <category>Development</category>
+    <category>Electronics</category>
+  </categories>
+  <developer id="com.intel">
+    <name>Intel Corporation</name>
+  </developer>
+  <content_rating type="oars-1.1" />
+  <url type="homepage">https://www.intel.com/content/www/us/en/products/details/fpga/development-tools/quartus-prime.html</url>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>LicenseRef-QuartusPrime</project_license>
+  <releases>
+    <release version="23.1.1" date="2024-06-14">
+      <url>https://www.intel.com/content/www/us/en/software-kit/825277/intel-quartus-prime-lite-edition-design-software-version-23-1-1-for-linux.html</url>
+    </release>
+    <release version="23.1" date="2023-12-11">
+      <url>https://www.intel.com/content/www/us/en/software-kit/795187/intel-quartus-prime-lite-edition-design-software-version-23-1-for-linux.html</url>
+    </release>
+  </releases>
+</component>
+
+<!-- SPDX-License-Identifier: CC0-1.0 -->

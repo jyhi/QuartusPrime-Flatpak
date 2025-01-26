@@ -1,0 +1,12 @@
+# SPDX-FileCopyrightText: 2024 Junde Yhi <junde@yhi.moe>
+# SPDX-License-Identifier: CC0-1.0
+
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Quartus Prime Programmer
+Comment=Intel FPGA standalone programmer
+Categories=Development;Electronics;
+Icon=com.intel.quartusprime.programmer
+Exec=
+Terminal=false
