@@ -9,12 +9,11 @@ FLATPAK = flatpak
 
 FLATPAKFLAGS = --user
 
-srcdir   ?= .
 STATEDIR ?= ./.flatpak-builder
 BUILDDIR ?= ./build
 REPODIR  ?= ./repo
 
-SRCFILES = $(srcdir)/$(PKGNAME).metainfo.xml $(srcdir)/$(PKGNAME).yml $(srcdir)/$(REQFILES)
+SRCFILES = $(PKGNAME).desktop $(PKGNAME).metainfo.xml $(PKGNAME).yml $(REQFILES)
 
 .SUFFIXES:
 .PHONY: all install uninstall clean distclean dist check check-metadata check-manifest check-builddir check-repo
