@@ -1,10 +1,10 @@
 # SPDX-FileCopyrightText: 2024-2025 Junde Yhi <junde@yhi.moe>
 # SPDX-License-Identifier: CC0-1.0
 
-.flatpak-builder/
-assets/
-build/
-repo/
+.flatpak-builder
+build
+repo
+assets
 *.qdz
 *.run
 *.tar.xz
