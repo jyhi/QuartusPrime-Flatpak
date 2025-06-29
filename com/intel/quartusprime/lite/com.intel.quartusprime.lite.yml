@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2024 Junde Yhi <junde@yhi.moe>
+# SPDX-FileCopyrightText: 2024-2025 Junde Yhi <junde@yhi.moe>
 # SPDX-License-Identifier: CC0-1.0
 
 id: com.intel.quartusprime.lite
@@ -12,24 +12,29 @@ add-extensions:
     # multiple models, so they cannot be mounted to a single point. The way to resolve this is to define an extension
     # point in a separate mounting point, then create soft links pointing into folders in the extension. For example,
     # com.intel.quartusprime.lite.device.max10 with the following configuration will be automatically identified as an
-    # extension of this Flatpak and mounted to /app/opt/intelFPGA_lite/23.1std/quartus/common/devinfo/.flatpak/max10.
+    # extension of this Flatpak and mounted to /app/opt/altera_lite/24.1std/quartus/common/devinfo/.flatpak/max10.
     # The post-install step below creates soft link pointing into this folder, so that (when extension is installed)
     # the device support appears in the right place.
-    directory: opt/intelFPGA_lite/23.1std/quartus/common/devinfo/.flatpak
+    directory: opt/altera_lite/24.1std/quartus/common/devinfo/.flatpak
     subdirectories: true
     no-autodownload: true
     autodelete: true
   com.intel.quartusprime.lite.help:
-    directory: opt/intelFPGA_lite/23.1std/quartus/common/help
-    no-autodownload: false
+    directory: opt/altera_lite/24.1std/quartus/common/help
+    no-autodownload: true
     autodelete: true
   com.intel.quartusprime.lite.questa.starter:
-    directory: opt/intelFPGA_lite/23.1std/questa_fse
-    no-autodownload: false
+    directory: opt/altera_lite/24.1std/questa_fse
+    no-autodownload: true
     autodelete: true
 finish-args:
-  - --socket=x11
+  - --allow=multiarch
   - --share=ipc
+  - --socket=x11
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --filesystem=home
+  - --persistent=.altera.quartus
 command: quartus.sh
 modules:
   # Supply libcrypt.so.1, which is still required by the software.
@@ -37,10 +42,11 @@ modules:
     buildsystem: autotools
     config-opts:
       - --prefix=/app
-      - --enable-hashes=strong,glibc
+      - --enable-hashes=glibc
       - --enable-obsolete-api=glibc
       - --disable-static
       - --disable-failure-tokens
+    install-rule: install-exec # no header or manpage
     sources:
       - type: archive
         url: https://github.com/besser82/libxcrypt/releases/download/v4.4.38/libxcrypt-4.4.38.tar.xz
@@ -59,52 +65,67 @@ modules:
           /app/lib
 
   # Run the installer for Quartus Prime (includes Nios II EDS).
-  - name: installer
+  - name: installation
     buildsystem: simple
     build-commands:
-      - chmod u+x QuartusLiteSetup-23.1std.1.993-linux.run
-      - ./QuartusLiteSetup-23.1std.1.993-linux.run --mode unattended --disable-components quartus_help,devinfo,arria_lite,cyclone,cyclone10lp,cyclonev,max,max10,quartus_update,riscfree,questa_fse,questa_fe --installdir /app/opt/intelFPGA_lite/23.1std --product_copy_name Flatpak --accept_eula 1
-      # Fix permissions of the extracted files and folders to allow the build process to carry on...
-      - chmod -R u+w,g-s /app/opt/intelFPGA_lite
+      - chmod u+x QuartusLiteSetup-24.1std.0.1077-linux.run
+      - ./QuartusLiteSetup-24.1std.0.1077-linux.run --mode unattended --disable-components quartus_help,devinfo,arria_lite,cyclone,cyclone10lp,cyclonev,max,max10,quartus_update,riscfree,questa_fse,questa_fe --installdir /app/opt/altera_lite/24.1std --product_copy_name Flatpak --accept_eula 1
+      # Rectify permissions:
+      # - All directories have rwxr-xr-x (0755)
+      # - All executable files have rwxr-xr-x (0755)
+      # - All non-executable files have rw-r--r-- (0644)
+      # - All setuid and setgid are cleared
+      - find /app/opt -type d -exec chmod u=rwx-s,g=rx-s,o=rx {} \;
+      - find /app/opt -type f -perm -u=x -exec chmod u=rwx-s,g=rx-s,o=rx {} \;
+      - find /app/opt -type f ! -perm -u=x -exec chmod u=rw-s,g=r-s,o=r {} \;
     sources:
       - type: file
-        path: QuartusLiteSetup-23.1std.1.993-linux.run
-        # SHA-1 is taken from the Intel website, but SHA-256 is used in favor of the security.
-        # sha1: bbca0986c79ca4b367838fca31b061ed87bfe50e
-        sha256: 382a76859adfadfa759c04ae54d5a083cfce0d1ae5ebb489f9ce885aae5e5af6
+        path: QuartusLiteSetup-24.1std.0.1077-linux.run
+        # sha1: 62a899e695d4ea478bc51850867cf6222d9589cf
+        sha256: 345593d5559c6f782e9fb1a1a4f6c7cd1dd221804ca4ae348c44974bfbc2e482
 
   # Do various post-installation work. Separated from the last step because we want it to be kept cached.
-  - name: post-install
+  - name: post-installationation
     buildsystem: simple
     build-commands:
       # Remove unnecessary files. This however creates an extra dialog during application startup.
-      - rm -fr /app/opt/intelFPGA_lite/23.1std/logs
-      - rm -fr /app/opt/intelFPGA_lite/23.1std/uninstall
+      - rm -fr /app/opt/altera_lite/24.1std/logs
+      - rm -fr /app/opt/altera_lite/24.1std/uninstall
       # Create extension mounting points (otherwise extensions would fail to install).
-      - mkdir -p /app/opt/intelFPGA_lite/23.1std/quartus/common/devinfo/.flatpak
-      - mkdir -p /app/opt/intelFPGA_lite/23.1std/quartus/common/help
-      - mkdir -p /app/opt/intelFPGA_lite/23.1std/questa_fse
+      - mkdir -p /app/opt/altera_lite/24.1std/quartus/common/devinfo/.flatpak
+      - mkdir -p /app/opt/altera_lite/24.1std/quartus/common/help
+      - mkdir -p /app/opt/altera_lite/24.1std/questa_fse
       # For device support, set up soft links pointing to the subdirectories.
-      - ln -s .flatpak/arrialite/arriaii /app/opt/intelFPGA_lite/23.1std/quartus/common/devinfo/arriaii
-      - ln -s .flatpak/cyclone10lp/cyclone10lp /app/opt/intelFPGA_lite/23.1std/quartus/common/devinfo/cyclone10lp
-      - ln -s .flatpak/cyclone/cycloneive /app/opt/intelFPGA_lite/23.1std/quartus/common/devinfo/cycloneive
-      - ln -s .flatpak/cyclone/cycloneivgx /app/opt/intelFPGA_lite/23.1std/quartus/common/devinfo/cycloneivgx
-      - ln -s .flatpak/cyclonev/cyclonev /app/opt/intelFPGA_lite/23.1std/quartus/common/devinfo/cyclonev
-      - ln -s .flatpak/max10/55nm /app/opt/intelFPGA_lite/23.1std/quartus/common/devinfo/55nm
-      - ln -s .flatpak/max/maxii /app/opt/intelFPGA_lite/23.1std/quartus/common/devinfo/maxii
-      - ln -s .flatpak/max/maxv /app/opt/intelFPGA_lite/23.1std/quartus/common/devinfo/maxv
+      - ln -s .flatpak/arrialite/arriaii /app/opt/altera_lite/24.1std/quartus/common/devinfo/arriaii
+      - ln -s .flatpak/cyclone10lp/cyclone10lp /app/opt/altera_lite/24.1std/quartus/common/devinfo/cyclone10lp
+      - ln -s .flatpak/cyclone/cycloneive /app/opt/altera_lite/24.1std/quartus/common/devinfo/cycloneive
+      - ln -s .flatpak/cyclone/cycloneivgx /app/opt/altera_lite/24.1std/quartus/common/devinfo/cycloneivgx
+      - ln -s .flatpak/cyclonev/cyclonev /app/opt/altera_lite/24.1std/quartus/common/devinfo/cyclonev
+      - ln -s .flatpak/max10/55nm /app/opt/altera_lite/24.1std/quartus/common/devinfo/55nm
+      - ln -s .flatpak/max/maxii /app/opt/altera_lite/24.1std/quartus/common/devinfo/maxii
+      - ln -s .flatpak/max/maxv /app/opt/altera_lite/24.1std/quartus/common/devinfo/maxv
       # Add AppStream data, application icon, and desktop entry.
       - mkdir -p /app/share/metainfo
       - cp com.intel.quartusprime.lite.metainfo.xml /app/share/metainfo
       - mkdir -p /app/share/icons/hicolor/64x64/apps
-      - cp /app/opt/intelFPGA_lite/23.1std/quartus/adm/quartusii.png /app/share/icons/hicolor/64x64/apps/com.intel.quartusprime.lite.png
+      - cp /app/opt/altera_lite/24.1std/quartus/adm/quartusii.png /app/share/icons/hicolor/64x64/apps/com.intel.quartusprime.lite.png
       - mkdir -p /app/share/applications
       - cp com.intel.quartusprime.lite.desktop /app/share/applications
     sources:
       - type: file
         path: com.intel.quartusprime.lite.metainfo.xml
-      - type: file
-        path: com.intel.quartusprime.lite.desktop
+      - type: inline
+        dest-filename: com.intel.quartusprime.lite.desktop
+        contents: |
+          [Desktop Entry]
+          Version=1.0
+          Type=Application
+          Name=Quartus Prime Lite
+          Comment=Intel FPGA design software
+          Categories=Development;Electronics;
+          Icon=com.intel.quartusprime.lite
+          Exec=
+          Terminal=false
 
   # Install two scripts as entry points:
   #
@@ -120,17 +141,18 @@ modules:
       - mkdir -p /app/bin
       - cp enable.sh /app/enable.sh
       - cp quartus.sh /app/bin/quartus.sh
-      - chmod 0755 /app/enable.sh /app/bin/quartus.sh
+      - chmod u=rwx,go=rx /app/enable.sh /app/bin/quartus.sh
     sources:
       - type: script
         dest-filename: enable.sh
         commands:
-          - QUARTUS_ROOTDIR='/app/opt/intelFPGA_lite/23.1std/quartus'
-          - QUESTA_ROOTDIR='/app/opt/intelFPGA_lite/23.1std/questa_fse'
+          - QUARTUS_ROOTDIR='/app/opt/altera_lite/24.1std/quartus'
+          - QUESTA_ROOTDIR='/app/opt/altera_lite/24.1std/questa_fse'
           - export QSYS_ROOTDIR="${QUARTUS_ROOTDIR}/sopc_builder/bin"
           - export PATH="${PATH}:${QUARTUS_ROOTDIR}/bin:${QUESTA_ROOTDIR}/bin:${QSYS_ROOTDIR}"
       - type: script
         dest-filename: quartus.sh
         commands:
+          - ARGS="$@"
           - . /app/enable.sh
-          - quartus "$@"
+          - quartus "${ARGS:---64bit}"

@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2024 Junde Yhi <junde@yhi.moe>
+# SPDX-FileCopyrightText: 2024-2025 Junde Yhi <junde@yhi.moe>
 # SPDX-License-Identifier: CC0-1.0
 
 id: com.intel.quartusprime.lite.device.max10
@@ -7,18 +7,23 @@ runtime: com.intel.quartusprime.lite
 sdk: org.freedesktop.Sdk//24.08
 build-extension: true
 modules:
-  - name: installer
+  - name: installation
     buildsystem: simple
     build-commands:
+      # Rectify permissions:
+      # - All directories have rwxr-xr-x (0755)
+      # - All files have rw-r--r-- (0644)
+      # - All setuid and setgid are cleared
+      - find . -type d -exec chmod u=rwx-s,g=rx-s,o=rx {} \;
+      - find . -type f -exec chmod u=rw-s,g=r-s,o=r {} \;
       - cp -R 55nm "${FLATPAK_DEST}"
     sources:
       - type: archive
         archive-type: zip
         strip-components: 3 # quartus/common/devinfo
-        path: max10-23.1std.1.993.qdz
-        # SHA-1 is taken from the Intel website, but SHA-256 is used in favor of the security.
-        # sha1: 158ff328b61b17181056aa9309e619147e217fb3
-        sha256: 5cecab7801b7958115ecc9f287f527153b8ec0f42c77fb76dd0f3f3f6a7a53ed
+        path: max10-24.1std.0.1077.qdz
+        # sha1: 32ca623f33df3ffec1b6ee585a034db6e8c36d02
+        sha256: 79dc9c063d0fdeac0b376612fff42908741e18e5bc58cd11a9321674602412ff
 
   - name: metadata
     buildsystem: simple

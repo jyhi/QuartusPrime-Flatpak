@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2024 Junde Yhi <junde@yhi.moe>
+# SPDX-FileCopyrightText: 2024-2025 Junde Yhi <junde@yhi.moe>
 # SPDX-License-Identifier: CC0-1.0
 
 id: com.intel.quartusprime.lite.questa.starter
@@ -7,18 +7,25 @@ runtime: com.intel.quartusprime.lite
 sdk: org.freedesktop.Sdk//24.08
 build-extension: true
 modules:
-  - name: installer
+  - name: installation
     buildsystem: simple
     build-commands:
-      - chmod u+x QuestaSetup-23.1std.1.993-linux.run
-      - ./QuestaSetup-23.1std.1.993-linux.run --mode unattended --installdir ./intelFPGA_lite/23.1std --product_copy_name Flatpak --accept_eula 1 --questa_edition questa_fse
-      - cp -R ./intelFPGA_lite/23.1std/questa_fse/* "${FLATPAK_DEST}"
+      - chmod u+x QuestaSetup-24.1std.0.1077-linux.run
+      - ./QuestaSetup-24.1std.0.1077-linux.run --mode unattended --installdir ./altera_lite/24.1std --product_copy_name Flatpak --accept_eula 1 --questa_edition questa_fse
+      # Rectify permissions:
+      # - All directories have rwxr-xr-x (0755)
+      # - All executable files have rwxr-xr-x (0755)
+      # - All non-executable files have rw-r--r-- (0644)
+      # - All setuid and setgid are cleared
+      - find ./altera_lite/24.1std -type d -exec chmod u=rwx-s,g=rx-s,o=rx {} \;
+      - find ./altera_lite/24.1std -type f -perm -u=x -exec chmod u=rwx-s,g=rx-s,o=rx {} \;
+      - find ./altera_lite/24.1std -type f ! -perm -u=x -exec chmod u=rw-s,g=r-s,o=r {} \;
+      - cp -R ./altera_lite/24.1std/questa_fse/* "${FLATPAK_DEST}"
     sources:
       - type: file
-        path: QuestaSetup-23.1std.1.993-linux.run
-        # SHA-1 is taken from the Intel website, but SHA-256 is used in favor of the security.
-        # sha1: 88622812c4318d8e9d09c547b7315b1ea94e76db
-        sha256: 0e77b830b1521975152cc77e260892fdde515fdb7982ce8f12f7b14ecb0b745e
+        path: QuestaSetup-24.1std.0.1077-linux.run
+        # sha1: 3bc55724807c4792e6bc71dfe454378474b9a4a1
+        sha256: e3e637e14889c1e9e5229fd72b332cfb669866dfd8e9798d9a26325d598e4247
 
   - name: metadata
     buildsystem: simple

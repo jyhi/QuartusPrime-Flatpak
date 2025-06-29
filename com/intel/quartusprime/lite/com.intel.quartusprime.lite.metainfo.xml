@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright 2024 Junde Yhi <junde@yhi.moe> -->
+<!-- Copyright 2024-2025 Junde Yhi <junde@yhi.moe> -->
 <component type="desktop-application">
   <id>com.intel.quartusprime.lite</id>
   <name>Quartus Prime Lite</name>
@@ -33,23 +33,20 @@
     <id>com.intel.quartusprime.programmer</id>
   </provides>
   <recommends>
-    <id version="23.1.1" compare="eq">com.intel.quartusprime.lite.help</id>
-    <id version="23.1.1" compare="eq">com.intel.quartusprime.lite.questa.starter</id>
+    <id version="24.1" compare="eq">com.intel.quartusprime.lite.help</id>
+    <id version="24.1" compare="eq">com.intel.quartusprime.lite.questa.starter</id>
   </recommends>
   <supports>
-    <id version="23.1.1" compare="eq">com.intel.quartusprime.lite.device.arrialite</id>
-    <id version="23.1.1" compare="eq">com.intel.quartusprime.lite.device.cyclone</id>
-    <id version="23.1.1" compare="eq">com.intel.quartusprime.lite.device.cyclone10lp</id>
-    <id version="23.1.1" compare="eq">com.intel.quartusprime.lite.device.cyclonev</id>
-    <id version="23.1.1" compare="eq">com.intel.quartusprime.lite.device.max</id>
-    <id version="23.1.1" compare="eq">com.intel.quartusprime.lite.device.max10</id>
+    <id version="24.1" compare="eq">com.intel.quartusprime.lite.device.arrialite</id>
+    <id version="24.1" compare="eq">com.intel.quartusprime.lite.device.cyclone</id>
+    <id version="24.1" compare="eq">com.intel.quartusprime.lite.device.cyclone10lp</id>
+    <id version="24.1" compare="eq">com.intel.quartusprime.lite.device.cyclonev</id>
+    <id version="24.1" compare="eq">com.intel.quartusprime.lite.device.max</id>
+    <id version="24.1" compare="eq">com.intel.quartusprime.lite.device.max10</id>
   </supports>
   <releases>
-    <release version="23.1.1" date="2024-06-14">
-      <url>https://www.intel.com/content/www/us/en/software-kit/825277/intel-quartus-prime-lite-edition-design-software-version-23-1-1-for-linux.html</url>
-    </release>
-    <release version="23.1" date="2023-12-11">
-      <url>https://www.intel.com/content/www/us/en/software-kit/795187/intel-quartus-prime-lite-edition-design-software-version-23-1-for-linux.html</url>
+    <release version="24.1" date="2025-03-17">
+      <url>https://www.intel.com/content/www/us/en/software-kit/849769/intel-quartus-prime-lite-edition-design-software-version-24-1-for-linux.html</url>
     </release>
   </releases>
 </component>

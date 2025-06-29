@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2024 Junde Yhi <junde@yhi.moe>
+# SPDX-FileCopyrightText: 2024-2025 Junde Yhi <junde@yhi.moe>
 # SPDX-License-Identifier: CC0-1.0
 
 id: com.intel.quartusprime.lite.device.arrialite
@@ -7,18 +7,23 @@ runtime: com.intel.quartusprime.lite
 sdk: org.freedesktop.Sdk//24.08
 build-extension: true
 modules:
-  - name: installer
+  - name: installation
     buildsystem: simple
     build-commands:
+      # Rectify permissions:
+      # - All directories have rwxr-xr-x (0755)
+      # - All files have rw-r--r-- (0644)
+      # - All setuid and setgid are cleared
+      - find . -type d -exec chmod u=rwx-s,g=rx-s,o=rx {} \;
+      - find . -type f -exec chmod u=rw-s,g=r-s,o=r {} \;
       - cp -R arriaii "${FLATPAK_DEST}"
     sources:
       - type: archive
         archive-type: zip
         strip-components: 3 # quartus/common/devinfo
-        path: arria_lite-23.1std.1.993.qdz
-        # SHA-1 is taken from the Intel website, but SHA-256 is used in favor of the security.
-        # sha1: 89bdc25bba825e9642b2e24c83796297d2a2b7c5
-        sha256: 3cda1cd7963987ed9bc61605231920d6a540b17217dc831f11049d3cb54d529e
+        path: arria_lite-24.1std.0.1077.qdz
+        # sha1: 439ff4f6c30826a1c78868db2e1a411e2100529a
+        sha256: 012be2f585f5e5be175da6c68e4b91e7097dc03c028a397cb3be745d347fe175
 
   - name: metadata
     buildsystem: simple

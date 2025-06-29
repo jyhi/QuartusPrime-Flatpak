@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2024 Junde Yhi <junde@yhi.moe>
+# SPDX-FileCopyrightText: 2024-2025 Junde Yhi <junde@yhi.moe>
 # SPDX-License-Identifier: CC0-1.0
 
 id: com.intel.quartusprime.lite.help
@@ -7,18 +7,25 @@ runtime: com.intel.quartusprime.lite
 sdk: org.freedesktop.Sdk//24.08
 build-extension: true
 modules:
-  - name: installer
+  - name: installation
     buildsystem: simple
     build-commands:
-      - chmod u+x QuartusHelpSetup-23.1std.1.993-linux.run
-      - ./QuartusHelpSetup-23.1std.1.993-linux.run --mode unattended --installdir ./intelFPGA_lite/23.1std --product_copy_name Flatpak --accept_eula 1
-      - cp -R ./intelFPGA_lite/23.1std/quartus/common/help/* "${FLATPAK_DEST}"
+      - chmod u+x QuartusHelpSetup-24.1std.0.1077-linux.run
+      - ./QuartusHelpSetup-24.1std.0.1077-linux.run --mode unattended --installdir ./altera_lite/24.1std --product_copy_name Flatpak --accept_eula 1
+      # Rectify permissions:
+      # - All directories have rwxr-xr-x (0755)
+      # - All executable files have rwxr-xr-x (0755)
+      # - All non-executable files have rw-r--r-- (0644)
+      # - All setuid and setgid are cleared
+      - find ./altera_lite/24.1std -type d -exec chmod u=rwx-s,g=rx-s,o=rx {} \;
+      - find ./altera_lite/24.1std -type f -perm -u=x -exec chmod u=rwx-s,g=rx-s,o=rx {} \;
+      - find ./altera_lite/24.1std -type f ! -perm -u=x -exec chmod u=rw-s,g=r-s,o=r {} \;
+      - cp -R ./altera_lite/24.1std/quartus/common/help/* "${FLATPAK_DEST}"
     sources:
       - type: file
-        path: QuartusHelpSetup-23.1std.1.993-linux.run
-        # SHA-1 is taken from the Intel website, but SHA-256 is used in favor of the security.
-        # sha1: d35838c4126ac42fe7e94e7f16003ea652acd478
-        sha256: 7443b02147b676bfd2dfefee2163a0ca3826910a20797426ebd7c3598db42497
+        path: QuartusHelpSetup-24.1std.0.1077-linux.run
+        # sha1: 74bb418ec7f09600c2752ce863e345888a503fd0
+        sha256: 4445755522d7b95faf56062adcc1e2c4fe3d5542a0034dbadca48abab433a64a
 
   - name: metadata
     buildsystem: simple

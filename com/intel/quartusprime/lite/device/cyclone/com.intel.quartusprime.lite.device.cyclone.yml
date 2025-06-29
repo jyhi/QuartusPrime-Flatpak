@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2024 Junde Yhi <junde@yhi.moe>
+# SPDX-FileCopyrightText: 2024-2025 Junde Yhi <junde@yhi.moe>
 # SPDX-License-Identifier: CC0-1.0
 
 id: com.intel.quartusprime.lite.device.cyclone
@@ -7,18 +7,23 @@ runtime: com.intel.quartusprime.lite
 sdk: org.freedesktop.Sdk//24.08
 build-extension: true
 modules:
-  - name: installer
+  - name: installation
     buildsystem: simple
     build-commands:
+      # Rectify permissions:
+      # - All directories have rwxr-xr-x (0755)
+      # - All files have rw-r--r-- (0644)
+      # - All setuid and setgid are cleared
+      - find . -type d -exec chmod u=rwx-s,g=rx-s,o=rx {} \;
+      - find . -type f -exec chmod u=rw-s,g=r-s,o=r {} \;
       - cp -R cycloneive cycloneivgx "${FLATPAK_DEST}"
     sources:
       - type: archive
         archive-type: zip
         strip-components: 3 # quartus/common/devinfo
-        path: cyclone-23.1std.1.993.qdz
-        # SHA-1 is taken from the Intel website, but SHA-256 is used in favor of the security.
-        # sha1: 4c260c32282032c477d5520a84ebd1200d01ecf0
-        sha256: da1b83b93917b7a8eccf08a1d30ceeb28c51bc40a2ebeb6ea6f45c52f9fa7880
+        path: cyclone-24.1std.0.1077.qdz
+        # sha1: 176c1f54c7da0623555a02864d3eb144fe6c00d3
+        sha256: 88d0384b99acb1f7e09f6f4d52189b264ea22a7989faf1bd2d86375be9e7a9c2
 
   - name: metadata
     buildsystem: simple

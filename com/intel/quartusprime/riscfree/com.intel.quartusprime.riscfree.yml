@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2024 Junde Yhi <junde@yhi.moe>
+# SPDX-FileCopyrightText: 2024-2025 Junde Yhi <junde@yhi.moe>
 # SPDX-License-Identifier: CC0-1.0
 
 id: com.intel.quartusprime.riscfree
@@ -6,35 +6,45 @@ collection-id: com.intel.quartusprime
 runtime: org.freedesktop.Platform
 runtime-version: '24.08'
 sdk: org.freedesktop.Sdk
+build-options:
+  no-debuginfo: true
 finish-args:
-  - --socket=x11
-  - --socket=fallback-x11
-  - --socket=wayland
+  - --allow=multiarch
   - --share=ipc
-command: /app/opt/intelFPGA/23.1std/riscfree/RiscFree/RiscFree
+  - --socket=x11
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --device=all
+  - --filesystem=home
+command: /app/opt/altera/24.1std/riscfree/RiscFree/RiscFree
 modules:
   # Run the installer for Ashling RiscFree IDE for Intel FPGAs.
-  - name: installer
+  - name: installation
     buildsystem: simple
     build-commands:
-      - chmod u+x RiscFreeSetup-23.1std.1.993-linux.run
-      - ./RiscFreeSetup-23.1std.1.993-linux.run --mode unattended --installdir /app/opt/intelFPGA/23.1std --product_copy_name Flatpak --accept_eula 1
-      # Fix permissions of the extracted files and folders to allow the build process to carry on...
-      - chmod -R u+w,g-s /app/opt/intelFPGA
+      - chmod u+x RiscFreeSetup-24.1std.0.1077-linux.run
+      - ./RiscFreeSetup-24.1std.0.1077-linux.run --mode unattended --installdir /app/opt/altera/24.1std --product_copy_name Flatpak --accept_eula 1
+      # Rectify permissions:
+      # - All directories have rwxr-xr-x (0755)
+      # - All executable files have rwxr-xr-x (0755)
+      # - All non-executable files have rw-r--r-- (0644)
+      # - All setuid and setgid are cleared
+      - find /app/opt -type d -exec chmod u=rwx-s,g=rx-s,o=rx {} \;
+      - find /app/opt -type f -perm -u=x -exec chmod u=rwx-s,g=rx-s,o=rx {} \;
+      - find /app/opt -type f ! -perm -u=x -exec chmod u=rw-s,g=r-s,o=r {} \;
     sources:
       - type: file
-        path: RiscFreeSetup-23.1std.1.993-linux.run
-        # SHA-1 is taken from the Intel website, but SHA-256 is used in favor of the security.
-        # sha1: 8c8406ab25d9a8b5855c3a589413508b75515ab2
-        sha256: b264a9163ae764d11695903eba548626276e378d2714a4da5b8d251f0e629192
+        path: RiscFreeSetup-24.1std.0.1077-linux.run
+        # sha1: 60fb94c7d52fc4ca28166409210b32c2bd1c2ffd
+        sha256: 9134615e4b12d4cc511ccff8723f24a29b8cf10f027ed4586641e84630f314cd
 
   # Do various post-installation work. Separated from the last step because we want it to be kept cached.
-  - name: post-install
+  - name: post-installation
     buildsystem: simple
     build-commands:
       # Remove unnecessary files.
-      - rm -fr /app/opt/intelFPGA/23.1std/logs
-      - rm -fr /app/opt/intelFPGA/23.1std/uninstall
+      - rm -fr /app/opt/altera/24.1std/logs
+      - rm -fr /app/opt/altera/24.1std/uninstall
       # Add AppStream data and desktop entry.
       - mkdir -p /app/share/metainfo
       - cp com.intel.quartusprime.riscfree.metainfo.xml /app/share/metainfo
@@ -43,5 +53,15 @@ modules:
     sources:
       - type: file
         path: com.intel.quartusprime.riscfree.metainfo.xml
-      - type: file
-        path: com.intel.quartusprime.riscfree.desktop
+      - type: inline
+        dest-filename: com.intel.quartusprime.riscfree.desktop
+        contents: |
+          [Desktop Entry]
+          Version=1.0
+          Type=Application
+          Name=RiscFree - Intel FPGA
+          Comment=IDE for Nios V and Intel FPGA HPS
+          Categories=Development;Electronics;
+          Icon=applications-development
+          Exec=
+          Terminal=false

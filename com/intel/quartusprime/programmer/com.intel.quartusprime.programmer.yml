@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2024 Junde Yhi <junde@yhi.moe>
+# SPDX-FileCopyrightText: 2024-2025 Junde Yhi <junde@yhi.moe>
 # SPDX-License-Identifier: CC0-1.0
 
 id: com.intel.quartusprime.programmer
@@ -7,10 +7,13 @@ runtime: org.freedesktop.Platform
 runtime-version: '24.08'
 sdk: org.freedesktop.Sdk
 finish-args:
-  - --socket=x11
+  - --allow=multiarch
   - --share=ipc
-  - --filesystem=host:ro
+  - --socket=x11
+  - --socket=wayland
+  - --socket=fallback-x11
   - --device=all
+  - --filesystem=host:ro
 command: quartus_pgmw.sh
 modules:
   # Supply libcrypt.so.1, which is still required by the software.
@@ -18,10 +21,11 @@ modules:
     buildsystem: autotools
     config-opts:
       - --prefix=/app
-      - --enable-hashes=strong,glibc
+      - --enable-hashes=glibc
       - --enable-obsolete-api=glibc
       - --disable-static
       - --disable-failure-tokens
+    install-rule: install-exec # no header or manpage
     sources:
       - type: archive
         url: https://github.com/besser82/libxcrypt/releases/download/v4.4.38/libxcrypt-4.4.38.tar.xz
@@ -40,39 +44,54 @@ modules:
           /app/lib
 
   # Run the installer for Quartus Prime Programmer.
-  - name: installer
+  - name: installation
     buildsystem: simple
     build-commands:
-      - chmod u+x QuartusProgrammerSetup-23.1std.1.993-linux.run
-      - ./QuartusProgrammerSetup-23.1std.1.993-linux.run --mode unattended --installdir /app/opt/intelFPGA/23.1std --product_copy_name Flatpak --accept_eula 1
-      # Fix permissions of the extracted files and folders to allow the build process to carry on...
-      - chmod -R u+w,g-s /app/opt/intelFPGA
+      - chmod u+x QuartusProgrammerSetup-24.1std.0.1077-linux.run
+      - ./QuartusProgrammerSetup-24.1std.0.1077-linux.run --mode unattended --installdir /app/opt/altera/24.1std --product_copy_name Flatpak --accept_eula 1
+      # Rectify permissions:
+      # - All directories have rwxr-xr-x (0755)
+      # - All executable files have rwxr-xr-x (0755)
+      # - All non-executable files have rw-r--r-- (0644)
+      # - All setuid and setgid are cleared
+      - find /app/opt -type d -exec chmod u=rwx-s,g=rx-s,o=rx {} \;
+      - find /app/opt -type f -perm -u=x -exec chmod u=rwx-s,g=rx-s,o=rx {} \;
+      - find /app/opt -type f ! -perm -u=x -exec chmod u=rw-s,g=r-s,o=r {} \;
     sources:
       - type: file
-        path: QuartusProgrammerSetup-23.1std.1.993-linux.run
-        # SHA-1 is taken from the Intel website, but SHA-256 is used in favor of the security.
-        # sha1: e488e1084349db280bd32bd9aa54711067f13fa3
-        sha256: 1ec1e39a567729036661146385bdb3477e27b68189b37b5c290d80a5a93ffda2
+        path: QuartusProgrammerSetup-24.1std.0.1077-linux.run
+        # sha1: e44db75a76b5924e7f16043513ea8837695a97ef
+        sha256: cb6f7e025350a1aba1d7511535f531902ab9f229f896a839b9f1fcd7446db96d
 
   # Do various post-installation work. Separated from the last step because we want it to be kept cached.
-  - name: post-install
+  - name: post-installation
     buildsystem: simple
     build-commands:
       # Remove unnecessary files.
-      - rm -fr /app/opt/intelFPGA/23.1std/logs
-      - rm -fr /app/opt/intelFPGA/23.1std/uninstall
+      - rm -fr /app/opt/altera/24.1std/logs
+      - rm -fr /app/opt/altera/24.1std/uninstall
       # Add AppStream data, application icon, and desktop entry.
       - mkdir -p /app/share/metainfo
       - cp com.intel.quartusprime.programmer.metainfo.xml /app/share/metainfo
       - mkdir -p /app/share/icons/hicolor/64x64/apps
-      - cp /app/opt/intelFPGA/23.1std/qprogrammer/adm/quartusii.png /app/share/icons/hicolor/64x64/apps/com.intel.quartusprime.programmer.png
+      - cp /app/opt/altera/24.1std/qprogrammer/adm/quartusii.png /app/share/icons/hicolor/64x64/apps/com.intel.quartusprime.programmer.png
       - mkdir -p /app/share/applications
       - cp com.intel.quartusprime.programmer.desktop /app/share/applications
     sources:
       - type: file
         path: com.intel.quartusprime.programmer.metainfo.xml
-      - type: file
-        path: com.intel.quartusprime.programmer.desktop
+      - type: inline
+        dest-filename: com.intel.quartusprime.programmer.desktop
+        contents: |
+          [Desktop Entry]
+          Version=1.0
+          Type=Application
+          Name=Quartus Prime Programmer
+          Comment=Intel FPGA standalone programmer
+          Categories=Development;Electronics;
+          Icon=com.intel.quartusprime.programmer
+          Exec=
+          Terminal=false
 
   # Install two scripts as entry points:
   #
@@ -88,16 +107,17 @@ modules:
       - mkdir -p /app/bin
       - cp enable.sh /app/enable.sh
       - cp quartus_pgmw.sh /app/bin/quartus_pgmw.sh
-      - chmod 0755 /app/enable.sh /app/bin/quartus_pgmw.sh
+      - chmod u=rwx,go=rx /app/enable.sh /app/bin/quartus_pgmw.sh
     sources:
       - type: script
         dest-filename: enable.sh
         commands:
-          - QPROGRAMMER_ROOTDIR='/app/opt/intelFPGA/23.1std/qprogrammer'
+          - QPROGRAMMER_ROOTDIR='/app/opt/altera/24.1std/qprogrammer'
           - export QSYS_ROOTDIR="${QPROGRAMMER_ROOTDIR}/sopc_builder/bin"
           - export PATH="${PATH}:${QPROGRAMMER_ROOTDIR}/bin:${QSYS_ROOTDIR}"
       - type: script
         dest-filename: quartus_pgmw.sh
         commands:
+          - ARGS="$@"
           - . /app/enable.sh
-          - quartus_pgmw "$@"
+          - quartus_pgmw "${ARGS:---64bit}"

@@ -1,8 +1,8 @@
-# SPDX-FileCopyrightText: 2024 Junde Yhi <junde@yhi.moe>
+# SPDX-FileCopyrightText: 2024-2025 Junde Yhi <junde@yhi.moe>
 # SPDX-License-Identifier: CC0-1.0
 
 PKGNAME  = com.intel.quartusprime.lite.device.max10
-REQFILES = max10-23.1std.1.993.qdz
+REQFILES = max10-24.1std.0.1077.qdz
 
 SHELL   = /bin/sh
 FLATPAK = flatpak

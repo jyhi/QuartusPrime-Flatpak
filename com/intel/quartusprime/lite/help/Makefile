@@ -1,8 +1,8 @@
-# SPDX-FileCopyrightText: 2024 Junde Yhi <junde@yhi.moe>
+# SPDX-FileCopyrightText: 2024-2025 Junde Yhi <junde@yhi.moe>
 # SPDX-License-Identifier: CC0-1.0
 
 PKGNAME  = com.intel.quartusprime.lite.help
-REQFILES = QuartusHelpSetup-23.1std.1.993-linux.run
+REQFILES = QuartusHelpSetup-24.1std.0.1077-linux.run
 
 SHELL   = /bin/sh
 FLATPAK = flatpak
@@ -13,7 +13,7 @@ STATEDIR ?= ./.flatpak-builder
 BUILDDIR ?= ./build
 REPODIR  ?= ./repo
 
-SRCFILES = $(PKGNAME).desktop $(PKGNAME).metainfo.xml $(PKGNAME).yml $(REQFILES)
+SRCFILES = $(PKGNAME).metainfo.xml $(PKGNAME).yml $(REQFILES)
 
 .SUFFIXES:
 .PHONY: all install uninstall clean distclean dist check check-metadata check-manifest check-builddir check-repo

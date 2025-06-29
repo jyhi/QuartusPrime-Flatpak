@@ -1,8 +1,8 @@
-# SPDX-FileCopyrightText: 2024 Junde Yhi <junde@yhi.moe>
+# SPDX-FileCopyrightText: 2024-2025 Junde Yhi <junde@yhi.moe>
 # SPDX-License-Identifier: CC0-1.0
 
 PKGNAME  = com.intel.quartusprime.lite.device.cyclone
-REQFILES = cyclone-23.1std.1.993.qdz
+REQFILES = cyclone-24.1std.0.1077.qdz
 
 SHELL   = /bin/sh
 FLATPAK = flatpak
