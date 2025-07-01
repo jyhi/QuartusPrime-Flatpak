@@ -7,31 +7,33 @@ REQFILES = max-24.1std.0.1077.qdz
 SHELL   = /bin/sh
 FLATPAK = flatpak
 
-FLATPAKFLAGS = --user
+FLATPAKINSTALLFLAGS   = --user --reinstall --noninteractive
+FLATPAKUNINSTALLFLAGS = --user --noninteractive
 
-STATEDIR ?= ./.flatpak-builder
-BUILDDIR ?= ./build
-REPODIR  ?= ./repo
+STATEDIR ?= .flatpak-builder
+BUILDDIR ?= .build
+REPODIR  ?= .repo
 
 SRCFILES = $(PKGNAME).metainfo.xml $(PKGNAME).yml $(REQFILES)
 
 .SUFFIXES:
-.PHONY: all install uninstall clean distclean dist check check-metadata check-manifest check-builddir check-repo
+.PHONY: all bundle install uninstall clean distclean check check-metadata check-manifest check-builddir check-repo
 
 all: $(BUILDDIR)
+repo: $(REPODIR)
+bundle: $(PKGNAME).flatpak
 install: $(REPODIR)
-	$(FLATPAK) $(FLATPAKFLAGS) install --sideload-repo=$(REPODIR) $(REPODIR) $(PKGNAME)
+	$(FLATPAK) install $(FLATPAKINSTALLFLAGS) --sideload-repo=$< $< $(PKGNAME)
 
 uninstall:
-	$(FLATPAK) $(FLATPAKFLAGS) uninstall $(PKGNAME)
+	$(FLATPAK) uninstall $(FLATPAKUNINSTALLFLAGS) $(PKGNAME)
 
 clean:
-	rm -fr $(BUILDDIR) $(REPODIR)
+	$(RM) -r $(BUILDDIR) $(REPODIR) $(PKGNAME).flatpak
 
 distclean: clean
-	rm -fr $(STATEDIR)
+	$(RM) -r $(STATEDIR)
 
-dist: $(REPODIR)
 check: check-metadata check-manifest check-builddir check-repo
 check-metadata: $(PKGNAME).metainfo.xml
 	-$(FLATPAK) run --command=flatpak-builder-lint org.flatpak.Builder appstream $<
@@ -46,7 +48,10 @@ check-repo: $(REPODIR)
 	-$(FLATPAK) run --command=flatpak-builder-lint org.flatpak.Builder repo $<
 
 $(BUILDDIR): $(SRCFILES)
-	$(FLATPAK) $(FLATPAKFLAGS) run org.flatpak.Builder --sandbox --state-dir=$(STATEDIR) --force-clean $(BUILDDIR) $(PKGNAME).yml
+	$(FLATPAK) run org.flatpak.Builder --sandbox --state-dir=$(STATEDIR) --force-clean $@ $(PKGNAME).yml
 
 $(REPODIR): $(BUILDDIR)
-	$(FLATPAK) $(FLATPAKFLAGS) run org.flatpak.Builder --sandbox --state-dir=$(STATEDIR) --repo=$(REPODIR) --export-only $(BUILDDIR) $(PKGNAME).yml
+	$(FLATPAK) run org.flatpak.Builder --sandbox --state-dir=$(STATEDIR) --repo=$@ --export-only $< $(PKGNAME).yml
+
+$(PKGNAME).flatpak: $(REPODIR)
+	$(FLATPAK) build-bundle $< $@ $(PKGNAME)
