@@ -8,11 +8,11 @@ runtime-version: '24.08'
 sdk: org.freedesktop.Sdk
 finish-args:
   - --allow=multiarch
+  - --device=all
   - --share=ipc
   - --socket=x11
   - --socket=wayland
   - --socket=fallback-x11
-  - --device=all
   - --filesystem=host:ro
 command: quartus_pgmw.sh
 modules:

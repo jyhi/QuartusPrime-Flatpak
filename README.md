@@ -95,7 +95,8 @@ flatpak run --command=/bin/sh com.intel.quartusprime.lite -c '. /app/enable.sh; 
 All applications have the following permissions preset:
 
 - x86 (32-bit) support (`--allow=multiarch`)
-- Share IPC namespace (for X.org performance) (`--share=ipc`)
+- Access to all devices on the computer (`--device=all`; allows device programming)
+- Share IPC namespace (`--share=ipc`; improves X.org performance)
 - Display on X.org (`--socket=x11`)
 - Display on Wayland (`--socket=wayland`)
 - XWayland fallback (`--socket=fallback-x11`)
@@ -103,16 +104,14 @@ All applications have the following permissions preset:
 Quartus Prime Lite Edition has the following additional permissions preset:
 
 - Read-write access to all files under the home directory (`--filesystem=home`)
-- Permanent access to `~/.altera.quartus` (`--persistent=.altera.quartus`)
+- Persist `~/.altera.quartus` across application startups (`--persist=.altera.quartus`)
 
 Quartus Prime Programmer (standalone) has the following additional permissions preset:
 
-- Access to all devices on the computer (`--device=all`)
 - Read-only access to all files on the computer (`--filesystem=host:ro`)
 
 RiscFree has the following additional permissions preset:
 
-- Access to all devices on the computer (`--device=all`)
 - Read-write access to all files under the home directory (`--filesystem=home`)
 
 Users are encouraged to review the permissions before launching the applications. To manage application permissions, use command [flatpak-override(1)](https://docs.flatpak.org/en/latest/flatpak-command-reference.html#flatpak-override). For example, to grant Quartus Prime read-write access to all files and devices on the computer, run:
@@ -140,22 +139,20 @@ The RTL simulator (Questa - Intel FPGA Starter Edition) that comes with Quartus 
 1. Click the "Get no-cost licenses" button under menu \[Tools\] \> \[License Setup...\]: [follow steps in this document](https://www.intel.com/content/www/us/en/docs/programmable/683472/25-1/acquiring-free-no-cost-licenses.html#uex1716819435805__section_lz4_4jt_nbc) (Method 2).
 2. Obtain a license on Self-Service Licensing Center (SSLC): [follow steps in this document](https://www.intel.com/content/www/us/en/docs/programmable/683472/25-1/and-software-license.html) (Generating the License).
 
-With method 1, the license file is automatically placed at `~/.altera.quartus/license.dat`. With method 2, the file needs to be made visible to the software. To make the license file visible inside container, do either of the following:
-
-* Place a copy of the license file at `~/.altera.quartus/license.dat`.
-* Expose the file (can be at any location) via Flatpak:
-
-    ```sh
-    flatpak override --filesystem=/path/to/license.dat:ro com.intel.quartusprime.lite
-    ```
-
-Then, set environment variable `LM_LICENSE_FILE` with the path to license file:
+With method 1, the license file is automatically placed at `~/.altera.quartus/license.dat`. With method 2, the file needs to be made visible to the software. To make the license file visible inside container, expose the file (can be at any location), then set environment variable `LM_LICENSE_FILE` with the path to the license file:
 
 ```sh
-flatpak override --env=LM_LICENSE_FILE=/path/to/license.dat com.intel.quartusprime.lite
+flatpak override --filesystem=/path/to/license.dat:ro \
+    --env=LM_LICENSE_FILE=/path/to/license.dat com.intel.quartusprime.lite
 ```
 
-Replace `/path/to/license.dat` with `~/.altera.quartus/license.dat` if the license is automatically obtained or is placed at the default location. Quartus Prime should be able to pick up the license automatically and pass it to Questa.
+If the license is automatically obtained with method 1 above, just set the environment variable:
+
+```sh
+flatpak override --env=LM_LICENSE_FILE=~/.altera.quartus/license.dat com.intel.quartusprime.lite
+```
+
+Quartus Prime should be able to pick up the license automatically and pass it to Questa.
 
 ## License
 

@@ -29,12 +29,13 @@ add-extensions:
     autodelete: true
 finish-args:
   - --allow=multiarch
+  - --device=all
   - --share=ipc
   - --socket=x11
   - --socket=wayland
   - --socket=fallback-x11
   - --filesystem=home
-  - --persistent=.altera.quartus
+  - --persist=.altera.quartus
 command: quartus.sh
 modules:
   # Supply libcrypt.so.1, which is still required by the software.

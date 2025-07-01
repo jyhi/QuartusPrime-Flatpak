@@ -10,11 +10,11 @@ build-options:
   no-debuginfo: true
 finish-args:
   - --allow=multiarch
+  - --device=all
   - --share=ipc
   - --socket=x11
   - --socket=wayland
   - --socket=fallback-x11
-  - --device=all
   - --filesystem=home
 command: /app/opt/altera/24.1std/riscfree/RiscFree/RiscFree
 modules:
