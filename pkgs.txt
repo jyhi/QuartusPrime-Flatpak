@@ -1,0 +1,11 @@
+com.intel.quartusprime.lite:QuartusLiteSetup-24.1std.0.1077-linux.run
+com.intel.quartusprime.lite.device.arrialite:arria_lite-24.1std.0.1077.qdz
+com.intel.quartusprime.lite.device.cyclone:cyclone-24.1std.0.1077.qdz
+com.intel.quartusprime.lite.device.cyclone10lp:cyclone10lp-24.1std.0.1077.qdz
+com.intel.quartusprime.lite.device.cyclonev:cyclonev-24.1std.0.1077.qdz
+com.intel.quartusprime.lite.device.max:max-24.1std.0.1077.qdz
+com.intel.quartusprime.lite.device.max10:max10-24.1std.0.1077.qdz
+com.intel.quartusprime.lite.help:QuartusHelpSetup-24.1std.0.1077-linux.run
+com.intel.quartusprime.lite.questa.starter:QuestaSetup-24.1std.0.1077-linux.run
+com.intel.quartusprime.programmer:QuartusProgrammerSetup-24.1std.0.1077-linux.run
+com.intel.quartusprime.riscfree:RiscFreeSetup-24.1std.0.1077-linux.run
