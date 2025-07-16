@@ -10,9 +10,9 @@ FLATPAK = flatpak
 FLATPAKINSTALLFLAGS   = --user --reinstall --noninteractive
 FLATPAKUNINSTALLFLAGS = --user --noninteractive
 
-STATEDIR ?= .flatpak-builder
-BUILDDIR ?= .build
-REPODIR  ?= .repo
+STATEDIR ?= ./.flatpak-builder
+BUILDDIR ?= ./.build
+REPODIR  ?= ./.repo
 
 SRCFILES = $(PKGNAME).metainfo.xml $(PKGNAME).yml $(REQFILES)
 
@@ -23,7 +23,7 @@ all: $(BUILDDIR)
 repo: $(REPODIR)
 bundle: $(PKGNAME).flatpak
 install: $(REPODIR)
-	$(FLATPAK) install $(FLATPAKINSTALLFLAGS) --sideload-repo=$< $< $(PKGNAME)
+	$(FLATPAK) install $(FLATPAKINSTALLFLAGS) --sideload-repo=$(REPODIR) $(REPODIR) $(PKGNAME)
 
 uninstall:
 	$(FLATPAK) uninstall $(FLATPAKUNINSTALLFLAGS) $(PKGNAME)
@@ -36,22 +36,22 @@ distclean: clean
 
 check: check-metadata check-manifest check-builddir check-repo
 check-metadata: $(PKGNAME).metainfo.xml
-	-$(FLATPAK) run --command=flatpak-builder-lint org.flatpak.Builder appstream $<
+	-$(FLATPAK) run --command=flatpak-builder-lint org.flatpak.Builder appstream $(PKGNAME).metainfo.xml
 
 check-manifest: $(PKGNAME).yml
-	-$(FLATPAK) run --command=flatpak-builder-lint org.flatpak.Builder manifest $<
+	-$(FLATPAK) run --command=flatpak-builder-lint org.flatpak.Builder manifest $(PKGNAME).yml
 
 check-builddir: $(BUILDDIR)
-	-$(FLATPAK) run --command=flatpak-builder-lint org.flatpak.Builder builddir $<
+	-$(FLATPAK) run --command=flatpak-builder-lint org.flatpak.Builder builddir $(BUILDDIR)
 
 check-repo: $(REPODIR)
-	-$(FLATPAK) run --command=flatpak-builder-lint org.flatpak.Builder repo $<
+	-$(FLATPAK) run --command=flatpak-builder-lint org.flatpak.Builder repo $(REPODIR)
 
 $(BUILDDIR): $(SRCFILES)
-	$(FLATPAK) run org.flatpak.Builder --sandbox --state-dir=$(STATEDIR) --force-clean $@ $(PKGNAME).yml
+	$(FLATPAK) run org.flatpak.Builder --sandbox --state-dir=$(STATEDIR) --force-clean $(BUILDDIR) $(PKGNAME).yml
 
 $(REPODIR): $(BUILDDIR)
-	$(FLATPAK) run org.flatpak.Builder --sandbox --state-dir=$(STATEDIR) --repo=$@ --export-only $< $(PKGNAME).yml
+	$(FLATPAK) run org.flatpak.Builder --sandbox --state-dir=$(STATEDIR) --repo=$(REPODIR) --export-only $(BUILDDIR) $(PKGNAME).yml
 
 $(PKGNAME).flatpak: $(REPODIR)
-	$(FLATPAK) build-bundle $< $@ $(PKGNAME)
+	$(FLATPAK) build-bundle $(REPODIR) $(PKGNAME).flatpak $(PKGNAME)
