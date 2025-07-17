@@ -54,4 +54,4 @@ $(REPODIR): $(BUILDDIR)
 	$(FLATPAK) run org.flatpak.Builder --sandbox --state-dir=$(STATEDIR) --repo=$(REPODIR) --export-only $(BUILDDIR) $(PKGNAME).yml
 
 $(PKGNAME).flatpak: $(REPODIR)
-	$(FLATPAK) build-bundle $(REPODIR) $(PKGNAME).flatpak $(PKGNAME)
+	$(FLATPAK) build-bundle --runtime $(REPODIR) $(PKGNAME).flatpak $(PKGNAME)
