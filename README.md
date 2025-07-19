@@ -94,25 +94,25 @@ flatpak run --command=/bin/sh com.intel.quartusprime.lite -c '. /app/enable.sh; 
 
 All applications have the following permissions preset:
 
-- x86 (32-bit) support (`--allow=multiarch`)
-- Access to all devices on the computer (`--device=all`; allows device programming)
-- Share IPC namespace (`--share=ipc`; improves X.org performance)
-- Display on X.org (`--socket=x11`)
-- Display on Wayland (`--socket=wayland`)
-- XWayland fallback (`--socket=fallback-x11`)
+- `--allow=multiarch`: allow 32-bit programs to run
+- `--device=all`: access to all devices on the computer (enable device programming)
+- `--share=ipc`: share IPC namespaces with host (improve X.org performance)
+- `--socket=x11`: enable display on X.org (or XWayland)
 
 Quartus Prime Lite Edition has the following additional permissions preset:
 
-- Read-write access to all files under the home directory (`--filesystem=home`)
-- Persist `~/.altera.quartus` across application startups (`--persist=.altera.quartus`)
+- `--filesystem=home`: read-write access to all files under the home directory
+- `--persist=.altera.quartus`: persist `~/.altera.quartus` across application startups
 
 Quartus Prime Programmer (standalone) has the following additional permissions preset:
 
-- Read-only access to all files on the computer (`--filesystem=host:ro`)
+- `--filesystem=host:ro`: read-only access to all files on the computer
 
 RiscFree has the following additional permissions preset:
 
-- Read-write access to all files under the home directory (`--filesystem=home`)
+- `--socket=wayland`: enable display on Wayland
+- `--socket=fallback-x11`: expose X.org display only when Wayland isn't available
+- `--filesystem=home`: read-write access to all files under the home directory
 
 Users are encouraged to review the permissions before launching the applications. To manage application permissions, use command [flatpak-override(1)](https://docs.flatpak.org/en/latest/flatpak-command-reference.html#flatpak-override). For example, to grant Quartus Prime read-write access to all files and devices on the computer, run:
 

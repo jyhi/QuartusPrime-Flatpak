@@ -32,8 +32,6 @@ finish-args:
   - --device=all
   - --share=ipc
   - --socket=x11
-  - --socket=wayland
-  - --socket=fallback-x11
   - --filesystem=home
   - --persist=.altera.quartus
 command: quartus.sh

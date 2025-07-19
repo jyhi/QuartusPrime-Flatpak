@@ -12,7 +12,7 @@ finish-args:
   - --allow=multiarch
   - --device=all
   - --share=ipc
-  - --socket=x11
+  - --socket=x11 # for compatibility
   - --socket=wayland
   - --socket=fallback-x11
   - --filesystem=home
